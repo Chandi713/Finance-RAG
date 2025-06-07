@@ -63,28 +63,7 @@ The system leverages a comprehensive collection of financial Q&A datasets from e
 
 ## 🚀 Instructions to Clone Repository and Run Code
 
-### Prerequisites
-
-Ensure your computational environment meets the following specifications:
-
-```bash
-Python 3.12+
-PyTorch 2.7.0+
-Transformers 4.52.3+
-Sentence-Transformers 4.1.0+
-CUDA-compatible GPU with 8GB+ VRAM (recommended for training)
-```
-
-### Repository Setup
-
-#### 1. Clone Repository
-
-```bash
-git clone https://github.com/yourusername/Finance-RAG-Capstone.git
-cd Finance-RAG-Capstone
-```
-
-#### 2. Environment Configuration
+#### 1. Environment Configuration
 
 Create and activate a Python virtual environment:
 
@@ -93,7 +72,7 @@ python -m venv finance-rag-env
 source finance-rag-env/bin/activate  # On Windows: finance-rag-env\Scripts\activate
 ```
 
-#### 3. Dependency Installation
+#### 2. Dependency Installation
 
 Install required dependencies using pip:
 
@@ -110,13 +89,6 @@ Execute data preprocessing and preparation:
 ```bash
 jupyter notebook Pre-Process.ipynb
 ```
-
-This notebook performs:
-- Multi-dataset loading and standardization
-- Train/evaluation split generation
-- Data quality validation and Unicode normalization
-- Statistical analysis and dataset characterization
-
 #### Model Training
 
 **BGE-M3 Model Fine-tuning:**
@@ -163,98 +135,6 @@ documents = [
 query_embedding = bge_model.encode(query)
 doc_embeddings = bge_model.encode(documents)
 similarities = bge_model.similarity(query_embedding, doc_embeddings)
-```
-
-## 🔧 Dependencies and Installation
-
-### Core Dependencies
-
-The project requires the following essential packages:
-
-#### Deep Learning Framework
-```bash
-torch>=2.7.0
-torchvision>=0.16.0
-torchaudio>=2.7.0
-```
-
-#### NLP and Transformer Libraries
-```bash
-transformers>=4.52.3
-sentence-transformers>=4.1.0
-datasets>=2.0.0
-```
-
-#### Fine-tuning and Optimization
-```bash
-peft>=0.8.0  # Parameter-Efficient Fine-Tuning
-bitsandbytes>=0.41.0  # Quantization support
-```
-
-#### Data Processing and Analysis
-```bash
-pandas>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-```
-
-#### Development and Experimentation
-```bash
-jupyter>=1.0.0
-notebook>=6.5.0
-ipywidgets>=8.0.0
-```
-
-### Installation Methods
-
-#### Method 1: Requirements File (Recommended)
-
-```bash
-pip install -r requirements.txt
-```
-
-#### Method 2: Individual Package Installation
-
-```bash
-# Install PyTorch with CUDA support
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-
-# Install core NLP libraries
-pip install transformers sentence-transformers datasets
-
-# Install fine-tuning dependencies
-pip install peft bitsandbytes
-
-# Install data processing libraries
-pip install pandas numpy scikit-learn
-
-# Install development tools
-pip install jupyter notebook ipywidgets
-```
-
-#### Method 3: Conda Environment (Alternative)
-
-```bash
-conda create -n finance-rag python=3.12
-conda activate finance-rag
-conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-pip install transformers sentence-transformers datasets peft bitsandbytes pandas numpy scikit-learn jupyter
-```
-
-### Verification of Installation
-
-Verify your installation with the following Python commands:
-
-```python
-import torch
-import transformers
-import sentence_transformers
-import peft
-
-print(f"PyTorch version: {torch.__version__}")
-print(f"CUDA available: {torch.cuda.is_available()}")
-print(f"Transformers version: {transformers.__version__}")
-print(f"Sentence-Transformers version: {sentence_transformers.__version__}")
 ```
 
 ### Hardware Requirements
