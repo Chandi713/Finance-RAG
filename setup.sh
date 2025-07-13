@@ -8,7 +8,7 @@ suffix=${suffix:0:18}
 # Set the necessary variables
 RESOURCE_GROUP="financerag-rg${suffix}"
 RESOURCE_PROVIDER="Microsoft.MachineLearningServices"
-REGIONS="eastus"
+REGION="eastus"
 WORKSPACE_NAME="financerag-mlw${suffix}"
 COMPUTE_INSTANCE="ci${suffix}"
 COMPUTE_CLUSTER="aml-cluster"
