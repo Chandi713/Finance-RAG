@@ -29,8 +29,8 @@ az configure --defaults workspace=$WORKSPACE_NAME
 
 # Create compute instance
 echo "Creating a compute instance with name: " $COMPUTE_INSTANCE
-az ml compute create --name ${COMPUTE_INSTANCE} --size Standard_E4ds_v4 --type ComputeInstance 
+az ml compute create --name ${COMPUTE_INSTANCE} --size STANDARD_DS11_V2  --type ComputeInstance 
 
 # Create compute cluster
 echo "Creating a compute cluster with name: " $COMPUTE_CLUSTER
-az ml compute create --name ${COMPUTE_CLUSTER} --size Standard_E4ds_v4 1 --max-instances 2 --type AmlCompute 
+az ml compute create --name ${COMPUTE_CLUSTER} --size STANDARD_DS11_V2 --max-instances 2 --type AmlCompute 
