@@ -33,3 +33,9 @@ az ml compute create --name ${COMPUTE_INSTANCE} --size STANDARD_DS11_V2  --type 
 # Create compute cluster
 echo "Creating a compute cluster with name: " $COMPUTE_CLUSTER
 az ml compute create --name ${COMPUTE_CLUSTER} --size STANDARD_DS11_V2 --max-instances 2 --type AmlCompute 
+
+az provider register --namespace Microsoft.MachineLearningServices --wait
+az provider register --namespace Microsoft.ContainerRegistry --wait
+az provider register --namespace Microsoft.Storage --wait
+az provider register --namespace Microsoft.KeyVault --wait
+az provider register --namespace Microsoft.Insights --wait
