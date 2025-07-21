@@ -29,11 +29,7 @@ The deployment creates:
 ### 1.2 Clone the Repository
 ```bash
 # Clone the repository and create/switch to the data-ingestion-pipeline branch
-git clone https://github.com/Chandi713/Finance-RAG.git
-cd Finance-RAG
-git checkout -b "data-ingestion-pipeline"
-
-# Navigate to the checkout directory
+git clone https://github.com/Chandi713/Finance-RAG.git checkout -b "data-ingestion-pipeline"
 cd checkout
 ```
 
@@ -77,16 +73,8 @@ In the compute instance terminal, run:
 
 ```bash
 # Clone the repository again in the compute instance
-git clone https://github.com/Chandi713/Finance-RAG.git
+git clone https://github.com/Chandi713/Finance-RAG.git checkout -b "data-ingestion-pipeline"
 
-# Navigate to the repository
-cd Finance-RAG
-
-# Create and switch to the data-ingestion-pipeline branch
-git checkout -b "data-ingestion-pipeline"
-
-# Navigate to the checkout directory if needed
-cd checkout
 ```
 
 ### 3.2 Verify Model Files
