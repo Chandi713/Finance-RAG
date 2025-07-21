@@ -82,11 +82,17 @@ The model files are already included in the repository. Verify the model directo
 ```
 model/
 ├── gte-finance-model/
-│   ├── config.json
-│   ├── pytorch_model.bin
-│   └── tokenizer files...
-├── score.py
-└── environment.yml
+│   ├── 1_Pooling/
+│   ├── README.md
+│   ├── adapter_config.json
+│   ├── adapter_model.safetensors
+│   ├── config_sentence_transformers.json
+│   ├── modules.json
+│   ├── sentence_bert_config.json
+│   ├── special_tokens_map.json
+│   ├── tokenizer.json
+│   └── tokenizer_config.json
+
 ```
 
 ✅ **Note**: All required model files are pre-included in the repository, so no additional model preparation is needed.
