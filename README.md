@@ -234,6 +234,4 @@ For issues related to:
 - **Model**: Refer to the sentence-transformers documentation
 - **Deployment**: Review the logs and error messages in Azure ML Studio
 
----
 
-**Note**: This guide uses the Finance-RAG repository from https://github.com/Chandi713/Finance-RAG.git on the `data-ingestion-pipeline` branch.
