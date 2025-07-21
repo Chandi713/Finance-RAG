@@ -1,5 +1,5 @@
 # Finance-RAG
-# GTE Finance Model Deployment on Azure Machine Learning
+# GTE Finance Model Deployment on Azure Machine Learning Workspace
 
 This guide walks you through deploying the GTE Finance embedding model as a managed endpoint on Azure Machine Learning. The model is based on sentence transformers and is optimized for financial text embeddings.
 
