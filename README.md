@@ -29,7 +29,7 @@ The deployment creates:
 ### 1.2 Clone the Repository
 ```bash
 # Clone the repository and create/switch to the data-ingestion-pipeline branch
-git clone https://github.com/Chandi713/Finance-RAG.git checkout -b "data-ingestion-pipeline"
+git clone https://github.com/Chandi713/Finance-RAG.git checkout -b "model-deployment"
 cd checkout
 ```
 
