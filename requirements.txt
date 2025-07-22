@@ -1,0 +1,9 @@
+langchain_text_splitters
+edgartools
+langchain
+qdrant-client
+datasets
+langchain_community
+sentence-transformers
+peft
+transformers
