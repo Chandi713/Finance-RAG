@@ -1,0 +1,54 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - /Users/smitchandi/Documents/Coding/Capstone/Finance-RAG/gte-finance-model:/usr/local/airflow/models/gte-finance-model
+
+volumes:
+  postgres_data:
+
+# version: '3'
+# services:
+#   postgres:
+#     image: postgres:13
+#     container_name: postgres_db
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#       POSTGRES_DB: postgres
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+
+#   airflow-webserver:
+#     depends_on:
+#       - postgres
+#     volumes:
+#       - ./dags:/opt/airflow/dags
+#       - ./logs:/opt/airflow/logs
+#       - ./plugins:/opt/airflow/plugins
+#       - /Users/smitchandi/Documents/Coding/Capstone/Finance-RAG/gte-finance-model:/opt/airflow/models/gte-finance-model
+#     ports:
+#       - "8080:8080"
+
+#   airflow-scheduler:
+#     depends_on:
+#       - postgres
+#     volumes:
+#       - ./dags:/opt/airflow/dags
+#       - ./logs:/opt/airflow/logs
+#       - ./plugins:/opt/airflow/plugins
+#       - /Users/smitchandi/Documents/Coding/Capstone/Finance-RAG/gte-finance-model:/opt/airflow/models/gte-finance-model
+
+# volumes:
+#   postgres_data:
