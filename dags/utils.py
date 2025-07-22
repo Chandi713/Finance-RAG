@@ -15,7 +15,7 @@ from sentence_transformers.util import cos_sim
 from sentence_transformers import SentenceTransformer
 from qdrant_client.models import Distance, VectorParams, PointStruct
 
-set_identity("capcool79@gmail.com")
+set_identity("ENTER YOUR EMAIL ID")
 
 # Global instances using lazy initialization pattern to optimize resource usage
 _model_instance: Optional[SentenceTransformer] = None
