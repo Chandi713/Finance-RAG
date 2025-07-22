@@ -73,7 +73,7 @@ In the compute instance terminal, run:
 
 ```bash
 # Clone the repository again in the compute instance
-git clone https://github.com/Chandi713/Finance-RAG.git checkout -b "data-ingestion-pipeline"
+git clone https://github.com/Chandi713/Finance-RAG.git checkout -b "model-deployment"
 
 ```
 
