@@ -10,15 +10,13 @@ from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 
 # --- 1. Configuration ---
-# Vector database configuration for financial document embeddings
+# Qdrant Credentials and Collection Details
 QDRANT_ENDPOINT = os.getenv("QDRANT_ENDPOINT")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME")
-# COSINE distance optimal for normalized transformer embeddings (768-dim financial model)
-VECTOR_PARAMS = VectorParams(size=768, distance=Distance.COSINE)
+# VECTOR_PARAMS = VectorParams(size=768, distance=Distance.COSINE)
 
-# Sector-based portfolio organization for systematic financial analysis coverage
-# Strategic selection covers major economic sectors with high-liquidity companies
+# Companies data organized by sector
 COMPANIES_DATA = {
     "Health": {
         "UnitedHealth Group Incorporated": "UNH",
@@ -38,7 +36,6 @@ COMPANIES_DATA = {
         "Caterpillar Inc.": "CAT",
         "General Electric Company": "GE",
         "3M Company": "MMM",
-        "Honeywell International Inc.": "HON",
         "Illinois Tool Works Inc.": "ITW"
     },
     "Defence": {
@@ -46,17 +43,16 @@ COMPANIES_DATA = {
         "Northrop Grumman Corporation": "NOC",
         "Raytheon Technologies Corporation": "RTX",
         "General Dynamics Corporation": "GD",
-        "L3Harris Technologies Inc.": "LHX"
+        "Palantir Technologies Inc": "PLTR"
     },
     "Finance": {
         "Capital One Financial Co.": "COF",
         "Bank of America Corporation": "BAC",
-        "Wells Fargo & Company": "WFC",
-        "Morgan Stanley": "MS"
+        "Wells Fargo & Company": "WFC"
     }
 }
 
-# Flatten hierarchical structure for linear processing pipeline
+# Extract all tickers for processing
 COMPANIES_TO_PROCESS = []
 for sector, companies in COMPANIES_DATA.items():
     for company_name, ticker in companies.items():
@@ -64,22 +60,44 @@ for sector, companies in COMPANIES_DATA.items():
 logging.info(f"Companies to be processed: {COMPANIES_TO_PROCESS}")
 logging.info(f"Total companies: {len(COMPANIES_TO_PROCESS)}")
 
+def create_collection(client, collection_name, vector_size=768):
+    """Create collection with payload indexes for company and year filtering"""
+    logging.info("create_collection called")
+    client.create_collection(
+        collection_name=collection_name,
+        vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE)
+    )
+    # Creating payload indexes for filtering
+    try:
+        client.create_payload_index(
+            collection_name=collection_name,
+            field_name="company",
+            field_schema="keyword"
+        )
+        
+        client.create_payload_index(
+            collection_name=collection_name,
+            field_name="year", 
+            field_schema="keyword"
+        )
+        
+        logging.info("Created payload indexes for company and year filtering")
+        
+    except Exception as e:
+        logging.warning(f"Warning: Could not create indexes: {e}")
+        logging.warning("You may need to create indexes manually or filtering will use fallback method")
+
 # --- 2. Qdrant Setup Function ---
 def setup_qdrant_collection():
     """
-    Orchestrates vector database initialization with idempotent collection management.
-    Implements defensive database state management through existence verification and cleanup.
-    Ensures pristine collection state for consistent multi-company ingestion workflows.
-    
-    Raises:
-        ConnectionError: When collection deletion fails, indicating uncertain database state
-        UnexpectedResponse: When Qdrant service encounters unexpected conditions
+    Connects to Qdrant, deletes the existing collection if it exists,
+    and creates a fresh new one. This ensures a clean state for the ingestion run.
     """
     logging.info("--- Starting Qdrant Database Setup ---")
     client = QdrantClient(url=QDRANT_ENDPOINT, api_key=QDRANT_API_KEY)
 
     try:
-        # Defensive state verification: check existing collections before operations
+        # Check if the collection already exists
         collections_response = client.get_collections()
         collection_names = [c.name for c in collections_response.collections]
 
@@ -89,31 +107,26 @@ def setup_qdrant_collection():
             if delete_result:
                 logging.info(f"Successfully deleted collection '{COLLECTION_NAME}'.")
             else:
-                # Fail-fast pattern: uncertain state is worse than clean failure
+                # If deletion fails, we raise an error as the state is uncertain.
                 raise ConnectionError(f"API call to delete collection '{COLLECTION_NAME}' failed.")
         else:
             logging.info(f"Collection '{COLLECTION_NAME}' not found. Skipping deletion.")
 
     except UnexpectedResponse as e:
-        # Qdrant-specific exception handling for service-level issues
         logging.error(f"An unexpected error occurred with the Qdrant service: {e}")
         raise
     except Exception as e:
         logging.error(f"A general error occurred during the deletion check: {e}")
         raise
 
-    # Idempotent collection creation using atomic recreate operation
+    # Create a new collection. Using recreate_collection is idempotent and safe.
     logging.info(f"Creating a new collection named '{COLLECTION_NAME}'...")
     try:
-        # recreate_collection provides atomicity: handles both deletion and creation
-        # More robust than separate delete/create operations for distributed systems
-        client.recreate_collection(
-            collection_name=COLLECTION_NAME,
-            vectors_config=VECTOR_PARAMS,
-        )
+        # recreate_collection handles both deleting if exists and creating fresh.
+        # It's a robust way to ensure the desired state.
+        create_collection(client, COLLECTION_NAME)
         logging.info(f"Successfully created collection '{COLLECTION_NAME}'.")
     except Exception as e:
-        # Fatal error classification: collection creation failure blocks entire pipeline
         logging.error(f"Fatal: Failed to create collection '{COLLECTION_NAME}': {e}")
         raise
 
@@ -121,39 +134,36 @@ def setup_qdrant_collection():
 
 
 # --- 3. Parent DAG Definition ---
-# Manual trigger strategy for controlled multi-company ingestion workflows
 with DAG(
     dag_id='master_ingestion_dag',
     start_date=pendulum_datetime(2025, 1, 1, tz="UTC"), 
-    schedule=None,  # Manual trigger only: prevents unintended automated execution
-    catchup=False,  # No historical backfill to avoid overwhelming EDGAR API and vector DB
+    schedule=None,
+    catchup=False,
     tags=['finance', 'rag', 'orchestration']
 ) as dag:
 
-    # Task 1: Database state preparation before multi-company processing
+    # Task 1: Set up the Qdrant collection
     setup_qdrant_task = PythonOperator(
         task_id='setup_qdrant_collection',
         python_callable=setup_qdrant_collection,
     )
 
-    # Sequential dependency chain initialization
+    # Initialize the dependency chain with the setup task
     last_task = setup_qdrant_task
 
-    # Task 2: Dynamic task generation with sequential execution strategy
-    # Creates linear dependency chain for controlled resource utilization
+    # Task 2: Dynamically create and chain TriggerDagRunOperator tasks for each company
     for ticker in COMPANIES_TO_PROCESS:
         trigger_child_dag_task = TriggerDagRunOperator(
             task_id=f'trigger_ingestion_for_{ticker.lower()}',
-            trigger_dag_id='finance_rag_ingestion_dag',  # Target child DAG for individual company processing
-            conf={'company_ticker': ticker},             # Dynamic parameter injection for each company
-            wait_for_completion=True,                    # Synchronous execution: prevents resource overwhelming
-            poke_interval=60,                            # Polling frequency balance: responsiveness vs. system load
-            retries=1,                                   # Limited retry policy: prevents infinite failure loops
+            trigger_dag_id='finance_rag_ingestion_dag',  # The ID of the DAG you provided
+            conf={'company_ticker': ticker},                     # Pass the ticker in the config
+            wait_for_completion=True,                            # Ensures sequential execution
+            poke_interval=60,                                    # Check status every 60 seconds
+            retries=1,                                           # Retry a failed trigger once
         )
                 
-        # Linear dependency chaining: ensures sequential company processing
-        # Critical for EDGAR API rate limiting and vector database stability
+        # Chain the tasks: last_task -> current_trigger_task
         last_task >> trigger_child_dag_task
         
-        # Dependency chain propagation: each task becomes predecessor for next iteration
+        # Update last_task to the newly created task for the next loop iteration
         last_task = trigger_child_dag_task
