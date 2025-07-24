@@ -16,7 +16,7 @@ from utils import (
     get_qdrant_pipeline,
 )
 load_dotenv()
-set_identity("capcool79@gmail.com")
+set_identity(""ENTER YOUR EMAIL ACCOUNT"")
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
