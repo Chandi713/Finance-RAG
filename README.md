@@ -3,6 +3,8 @@
 
 This guide walks you through deploying the GTE Finance embedding model as a managed endpoint on Azure Machine Learning. The model is based on sentence transformers and is optimized for financial text embeddings.
 
+![Model Endpoint Deployment](https://github.com/Chandi713/Finance-RAG/blob/model-deployment/Model%20Endpoint%20Azure.png)
+
 ## Prerequisites
 
 - Azure subscription with sufficient credits
