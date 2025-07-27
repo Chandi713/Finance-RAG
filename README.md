@@ -11,17 +11,7 @@ The pipeline consists of three main components:
 3. **Utility Functions** (`utils.py`) - Core processing logic and database operations
 
 ### Pipeline Flow
-
-```mermaid
-graph TD
-    A[Master DAG Trigger] --> B[Setup Qdrant Collection]
-    B --> C[Trigger Company DAGs Sequentially]
-    C --> D[Fetch 10-K Reports from EDGAR]
-    D --> E[Extract Item Content]
-    E --> F[Chunk Documents]
-    F --> G[Generate Embeddings]
-    G --> H[Store in Qdrant Vector DB]
-```
+![Data Ingestion Pipeline](https://github.com/Chandi713/Finance-RAG/blob/data-ingestion-pipeline/Data%20Ingestion%20Pipeline.png)
 
 ## 🚀 Features
 
